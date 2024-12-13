@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stream with Quality Selector</title>
+  <title>Live Stream Viewer</title>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@0.14.19"></script>
   <style>
     body {
@@ -15,29 +15,15 @@
       overflow-x: hidden;
     }
 
-    .sliding-text-container {
-      width: 100%;
-      background-color: #222;
-      overflow: hidden;
-      position: relative;
+    .video-container {
+      text-align: center;
+      margin-top: 50px;
     }
 
-    .sliding-text {
-      display: inline-block;
-      white-space: nowrap;
-      color: #fff;
-      font-size: 18px;
-      animation: slide 10s linear infinite;
-      padding: 10px 0;
-    }
-
-    @keyframes slide {
-      0% {
-        transform: translateX(100%);
-      }
-      100% {
-        transform: translateX(-100%);
-      }
+    #videoPlayer {
+      width: 90%;
+      max-width: 800px;
+      margin: 20px auto;
     }
 
     .quality-selector {
@@ -80,51 +66,6 @@
       position: relative;
     }
 
-    .popup-content h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
-
-    .popup-content p {
-      font-size: 16px;
-      margin-bottom: 20px;
-      color: #444;
-    }
-
-    .popup-content .highlight {
-      font-weight: bold;
-      color: #FF5733;
-    }
-
-    .popup-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    .popup-buttons button {
-      padding: 15px 30px;
-      font-size: 18px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    .popup-buttons .join-now {
-      background-color: #007BFF;
-      color: #fff;
-    }
-
-    .popup-buttons .close {
-      background-color: #DC3545;
-      color: #fff;
-    }
-
-    .popup-buttons button:hover {
-      transform: scale(1.1);
-    }
-
     .popup-close {
       position: absolute;
       top: 10px;
@@ -157,12 +98,6 @@
   </style>
 </head>
 <body>
-  <div class="sliding-text-container">
-    <div class="sliding-text">
-      Join our Telegram channel & support us! Join our Telegram channel & support us!
-    </div>
-  </div>
-
   <div class="popup" id="popup">
     <div class="popup-content">
       <span class="popup-close" onclick="closePopup()">×</span>
@@ -170,15 +105,12 @@
       <p>
         Stay updated with the latest streams and news. Join our channel <span class="highlight">CricketCraze</span> for more links!
       </p>
-      <div class="popup-buttons">
-        <button class="join-now" onclick="joinNow()">Join Now</button>
-        <button class="close" onclick="closePopup()">Close</button>
-      </div>
+      <a href="https://t.me/yourchannel" class="telegram-button">Join Telegram Channel</a>
     </div>
   </div>
 
-  <div class="video-container" style="text-align: center; margin-top: 100px;">
-    <video id="videoPlayer" controls style="width: 90%; max-width: 800px;">
+  <div class="video-container">
+    <video id="videoPlayer" controls>
       Your browser does not support the video tag.
     </video>
   </div>
@@ -195,8 +127,6 @@
     </select>
   </div>
 
-  <a href="https://t.me/yourchannel" class="telegram-button">Join Telegram Channel</a>
-
   <script>
     function getQueryParameter(param) {
       const urlParams = new URLSearchParams(window.location.search);
@@ -208,7 +138,6 @@
       if (videoUrl) {
         const videoPlayer = document.getElementById('videoPlayer');
 
-        // Use HLS.js for M3U8 stream
         if (Hls.isSupported()) {
           const hls = new Hls();
           hls.loadSource(videoUrl);
@@ -235,10 +164,10 @@
       const videoPlayer = document.getElementById('videoPlayer');
 
       if (baseVideoUrl) {
-        const newUrl = baseVideoUrl.replace(/144p|240p|360p|480p|720p|1080p/, quality); // Replace quality in the URL
+        const newUrl = baseVideoUrl.replace(/144p|240p|360p|480p|720p|1080p/, quality);
         videoPlayer.src = newUrl;
-        videoPlayer.load(); // Reload the video player with the new source
-        videoPlayer.play(); // Start playing the new source
+        videoPlayer.load();
+        videoPlayer.play();
       } else {
         alert("No video URL found.");
       }
@@ -246,10 +175,6 @@
 
     function closePopup() {
       document.getElementById("popup").style.display = "none";
-    }
-
-    function joinNow() {
-      window.location.href = "https://t.me/yourchannel";
     }
   </script>
 </body>
