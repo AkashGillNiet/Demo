@@ -15,7 +15,6 @@
       overflow-x: hidden;
     }
 
-    /* Sliding Text */
     .sliding-text-container {
       width: 100%;
       background-color: #222;
@@ -41,7 +40,6 @@
       }
     }
 
-    /* Quality Selector */
     .quality-selector {
       text-align: center;
       margin: 20px 0;
@@ -57,7 +55,6 @@
       cursor: pointer;
     }
 
-    /* Popup Styling */
     .popup {
       display: none;
       position: fixed;
@@ -138,7 +135,6 @@
       cursor: pointer;
     }
 
-    /* Bottom Telegram Button */
     .telegram-button {
       position: fixed;
       bottom: 10px;
@@ -161,14 +157,12 @@
   </style>
 </head>
 <body>
-  <!-- Sliding Text -->
   <div class="sliding-text-container">
     <div class="sliding-text">
       Join our Telegram channel & support us! Join our Telegram channel & support us!
     </div>
   </div>
 
-  <!-- Popup -->
   <div class="popup" id="popup">
     <div class="popup-content">
       <span class="popup-close" onclick="closePopup()">×</span>
@@ -183,14 +177,12 @@
     </div>
   </div>
 
-  <!-- Video Section -->
   <div class="video-container" style="text-align: center; margin-top: 100px;">
     <video id="videoPlayer" controls style="width: 90%; max-width: 800px;">
       Your browser does not support the video tag.
     </video>
   </div>
 
-  <!-- Quality Selector -->
   <div class="quality-selector">
     <label for="quality">Select Quality:</label>
     <select id="quality" onchange="changeQuality()">
@@ -203,23 +195,20 @@
     </select>
   </div>
 
-  <!-- Telegram Button -->
   <a href="https://t.me/yourchannel" class="telegram-button">Join Telegram Channel</a>
 
   <script>
-    // Get video URL from query parameters
     function getQueryParameter(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
     }
 
-    // Initialize the video player with HLS.js for M3U8 links
     window.onload = function () {
-      const videoUrl = getQueryParameter('url'); // Get the 'url' parameter
+      const videoUrl = getQueryParameter('url');
       if (videoUrl) {
         const videoPlayer = document.getElementById('videoPlayer');
 
-        // Check if HLS.js is supported
+        // Use HLS.js for M3U8 stream
         if (Hls.isSupported()) {
           const hls = new Hls();
           hls.loadSource(videoUrl);
@@ -227,23 +216,19 @@
           hls.on(Hls.Events.MANIFEST_PARSED, function () {
             videoPlayer.play();
           });
-        }
-        // If HLS.js is not supported, fallback to native HTML5 player
-        else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-          videoPlayer.src = videoUrl;
-          videoPlayer.addEventListener('loadedmetadata', function () {
-            videoPlayer.play();
+
+          hls.on(Hls.Events.ERROR, function(event, data) {
+            console.error("HLS.js error:", data);
+            alert("Failed to load video stream. Please check the URL or try again later.");
           });
+        } else {
+          alert("Your browser doesn't support HLS.js.");
         }
       } else {
         alert("No video URL found.");
       }
-
-      // Show popup
-      document.getElementById("popup").style.display = "flex";
     };
 
-    // Change Video Quality
     function changeQuality() {
       const quality = document.getElementById("quality").value;
       const baseVideoUrl = getQueryParameter('url');
@@ -259,12 +244,10 @@
       }
     }
 
-    // Close popup
     function closePopup() {
       document.getElementById("popup").style.display = "none";
     }
 
-    // Redirect on Join Now
     function joinNow() {
       window.location.href = "https://t.me/yourchannel";
     }
