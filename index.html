@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stream with Quality Selector</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@0.14.19"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -185,7 +186,6 @@
   <!-- Video Section -->
   <div class="video-container" style="text-align: center; margin-top: 100px;">
     <video id="videoPlayer" controls style="width: 90%; max-width: 800px;">
-      <source id="videoSource" src="" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
@@ -213,13 +213,30 @@
       return urlParams.get(param);
     }
 
-    // Set the video source dynamically
+    // Initialize the video player with HLS.js for M3U8 links
     window.onload = function () {
-      const videoUrl = getQueryParameter('video'); // Get the 'video' parameter
+      const videoUrl = getQueryParameter('url'); // Get the 'url' parameter
       if (videoUrl) {
-        const videoPlayer = document.getElementById('videoSource');
-        videoPlayer.src = videoUrl.replace("360p", "360p"); // Default to 360p
-        document.getElementById('videoPlayer').load(); // Reload the video player with the new source
+        const videoPlayer = document.getElementById('videoPlayer');
+
+        // Check if HLS.js is supported
+        if (Hls.isSupported()) {
+          const hls = new Hls();
+          hls.loadSource(videoUrl);
+          hls.attachMedia(videoPlayer);
+          hls.on(Hls.Events.MANIFEST_PARSED, function () {
+            videoPlayer.play();
+          });
+        }
+        // If HLS.js is not supported, fallback to native HTML5 player
+        else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+          videoPlayer.src = videoUrl;
+          videoPlayer.addEventListener('loadedmetadata', function () {
+            videoPlayer.play();
+          });
+        }
+      } else {
+        alert("No video URL found.");
       }
 
       // Show popup
@@ -229,13 +246,14 @@
     // Change Video Quality
     function changeQuality() {
       const quality = document.getElementById("quality").value;
-      const baseVideoUrl = getQueryParameter('video');
-      const videoPlayer = document.getElementById('videoSource');
+      const baseVideoUrl = getQueryParameter('url');
+      const videoPlayer = document.getElementById('videoPlayer');
 
       if (baseVideoUrl) {
         const newUrl = baseVideoUrl.replace(/144p|240p|360p|480p|720p|1080p/, quality); // Replace quality in the URL
         videoPlayer.src = newUrl;
-        document.getElementById('videoPlayer').load(); // Reload the video player with the new source
+        videoPlayer.load(); // Reload the video player with the new source
+        videoPlayer.play(); // Start playing the new source
       } else {
         alert("No video URL found.");
       }
