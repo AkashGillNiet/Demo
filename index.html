@@ -214,12 +214,15 @@
       if (videoUrl) {
         const videoPlayer = document.getElementById('videoPlayer');
 
+        console.log("Video URL: ", videoUrl); // Check if the URL is being passed correctly
+
         // Use HLS.js for M3U8 stream
         if (Hls.isSupported()) {
           const hls = new Hls();
           hls.loadSource(videoUrl);
           hls.attachMedia(videoPlayer);
           hls.on(Hls.Events.MANIFEST_PARSED, function () {
+            console.log("HLS manifest loaded.");
             videoPlayer.play();
           });
 
@@ -265,9 +268,4 @@
         videoPlayer.load(); // Reload the video player with the new source
         videoPlayer.play(); // Start playing the new source
       } else {
-        alert("No video URL found.");
-      }
-    }
-  </script>
-</body>
-</html>
+        alert("No video URL found
